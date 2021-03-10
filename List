@@ -87,22 +87,25 @@ nano /etc/mkinitcpio.conf
 > добавить "keymap" в строку HOOKS чтобы получилось так: 
 HOOKS=(base udev autodetect modconf block keymap filesystems keyboard fsck)
 
+passwd пароль_админа (!)
+
 
 
 # СОЗДАНИЕ ЯДРА И ЗАГРУЗЧИКА
 ---------------------------------
-cd /boot && mkinitcpio -p linux
+
 pacman -Syu grub efibootmgr dosfstools os-prober mtools
+cd /boot && mkinitcpio -p linux-zen
 mkdir /boot/EFI
 mount /dev/sda1  /boot/EFI
 grub-install --target=x86_64-efi  --bootloader-id=grub_uefi --recheck
 grub-mkconfig -o /boot/grub/grub.cfg
 exit
+umount /mnt/boot/EFI
+umount /mnt/boot
 umount /mnt
+
 systemctl reboot
-
-passwd пароль_админа (!)
-
 
 
 
@@ -183,4 +186,6 @@ sudo pacman -S xorg-server xorg-xinit xorg-apps xterm mesa-libgl
 # ШРИФТЫ
 --------------
 sudo pacman -S ttf-font-awesome ttf-liberation ttf-dejavu opendesktop-fonts ttf-bitstream-vera ttf-arphic-uming ttf-hanazono ttf-arphic-ukai
+
+
 
