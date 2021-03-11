@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# предварительно требуется wget и parted
+
+
 (
 	
 unit mib
