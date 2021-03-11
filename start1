@@ -1,6 +1,8 @@
 
+#!/bin/bash
 
-
+usage() {
+cat << EOF
 ###################################################################
 ###################################################################
 ################                                   ################
@@ -12,8 +14,9 @@
 ################                                   ################
 ###################################################################
 ###################################################################
+EOF
+}
 
-#!/bin/bash
 
 loadkeys ru 
 setfont cyr-sun16
@@ -97,12 +100,12 @@ grub-mkconfig -o /boot/grub/grub.cfg &&
 echo 'ЗАДАЙТЕ ПАРОЛЬ АДМЭНА :'
 passwd
 
-exit
-umount /mnt/boot/EFI &&
-umount /mnt/boot &&
-umount /mnt &&
+#exit
+#umount /mnt/boot/EFI &&
+#umount /mnt/boot &&
+#umount /mnt &&
 
-systemctl reboot
+#systemctl reboot
 
 
 
