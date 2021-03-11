@@ -1,8 +1,7 @@
 #!/bin/bash
 
-# предварительно требуется wget и parted
+# требуются wget и parted
 # не забыть изменить vda на sda
-
 
 (
 	
@@ -16,9 +15,8 @@ echo 'mkpart primary 514 4610';		#3 /dev/vda3 4GB (SWAP)
 echo 'name 3 swap';
 echo 'mkpart primary 4610 -1';		#4 /dev/vda4 (ext4)
 echo 'name 4 root';
+print
 
 ) | parted -a optimal /dev/vda  # выравнивание разделов
 
-print
-quit
 
