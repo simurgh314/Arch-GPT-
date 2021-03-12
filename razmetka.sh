@@ -14,7 +14,7 @@ echo '
 ###################################################################
 '
 
-DISK = 'vda'
+disk = 'vda'
 loadkeys ru &&
 setfont cyr-sun16 &&
 echo 'en_US.UTF-8 UTF-8' >> /etc/locale.gen &&
@@ -64,23 +64,23 @@ echo ; #root
 echo Y;
 echo w;
 
-) | fdisk -t gpt /dev/$DISK
+) | fdisk -t gpt /dev/${disk}
 
 
 
 echo 'ФОРМАТИРОВАНИЕ'
 
-mkswap /dev/$DISK3 &&
-swapon /dev/$DISK3 &&
-mkfs.fat -F32 /dev/$DISK1 &&
-(echo y;) | mkfs.ext2 /dev/$DISK2	&&
-(echo y;) | mkfs.ext4 /dev/$DISK4	&&
+mkswap /dev/${disk}3 &&
+swapon /dev/${disk}3 &&
+mkfs.fat -F32 /dev/${disk}1 &&
+(echo y;) | mkfs.ext2 /dev/${disk}2	&&
+(echo y;) | mkfs.ext4 /dev/${disk}4	&&
 
 
 echo 'МОНТИРОВАНИЕ'
 
-mount /dev/$DISK4 /mnt &&
+mount /dev/${disk}4 /mnt &&
 mkdir -p /mnt/{home,boot} &&
-mount /dev/$DISK2 /mnt/boot &&
+mount /dev/${disk}2 /mnt/boot &&
 lsblk
 
