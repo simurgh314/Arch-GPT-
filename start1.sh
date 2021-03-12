@@ -89,7 +89,7 @@ lsblk
 echo 'УСТАНОВКА БАЗОВОЙ СИСТЕМЫ'
 
 clear &&
-pacstrap /mnt linux-firmware linux-zen-headers linux-zen base base-devel nano dhcpcd dialog wpa_supplicant netctl mc git wget &&   
+pacstrap /mnt linux-firmware linux-zen-headers linux-zen base base-devel nano dhcpcd dialog wpa_supplicant netctl mc net-tools git wget &&   
 genfstab -U /mnt >> /mnt/etc/fstab
 
 
