@@ -23,9 +23,8 @@ echo 'ru_RU.KOI8-R KOI8-R' >> /etc/locale.gen &&
 echo 'ru_RU.UTF-8 UTF-8' >> /etc/locale.gen &&
 echo 'ru_RU ISO-8859-5' >> /etc/locale.gen &&
 locale-gen &&
-export LANG=ru_RU.UTF-8 &&
 timedatectl set-ntp true &&
-#pacman -Sy --noconfirm wget &&
+export LANG=ru_RU.UTF-8 &&
 
 
 
@@ -71,11 +70,11 @@ echo w;
 
 echo 'ФОРМАТИРОВАНИЕ'
 
+mkswap /dev/vda3 &&
+swapon /dev/vda3 &&
 mkfs.fat -F32 /dev/vda1 &&
 (echo y;) | mkfs.ext2 /dev/vda2	&&
 (echo y;) | mkfs.ext4 /dev/vda4	&&
-mkswap /dev/vda3 &&
-swapon /dev/vda3 &&
 
 
 echo 'МОНТИРОВАНИЕ'
