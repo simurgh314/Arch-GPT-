@@ -9,7 +9,7 @@ read -p "Укажите часовой пояс в формате  Europe/Moscow
 echo 'ЛОКАЛИЗАЦИЯ ЧАСЫ и ПРОЧЕЕ' 
 
 hostnamectl set-hostname $HOST &&
-ln -sf /usr/share/zoneinfo/$POYAS/etc/localtime &&
+ln -sf /usr/share/zoneinfo/$POYAS /etc/localtime &&
 hwclock --systohc && 
 timedatectl set-ntp true &&
 localectl set-keymap ru &&
@@ -29,7 +29,7 @@ passwd $USER
 
 echo "%wheel ALL=(ALL) ALL" >> /etc/sudoers &&
 clear
-exit
+
 
 
 
@@ -40,24 +40,31 @@ echo '========================================================================'
 echo 'ВСЕ ДАЛЬНЕЙШИЕ ДЕЙСТВИЯ ПРОВОДЯТСЯ ИЗ ПОД ПРОСТОГО ПОЛЬЗОВАТЕЛЯ!'
 echo '========================================================================'
 
-sudo pacman -Syu --noconfirm xorg-server xorg-xinit xorg-apps xterm mesa-libgl	
+
+
+echo '=================================================='
+echo 'УСТАНОВКА ДРАЙВЕРА ВИДЕО' 
+echo 'НЕ ОТХОДИТЕ ОТ КОМПЬЮТЕРА (если устанавливаете Арч на компьютер) 
+системе потребуется ввод пароля' 
+echo $USER 
+echo 'и возможно какие то ваши осмысленные манипуляции...'
 
 
 
+echo 'Видеокарта Nvidia(1) или Radeon(0) 
+
+read -p "1 - Nvidia, 0 - Radeon: " GPU
+if [[ $GPU == 0 ]]; then
+  video_install="git clone https://aur.archlinux.org/catalyst.git && cd catalyst && makepkg -sri"
+elif [[ $GPU == 1 ]]; then
+  video_install="sudo pacman -Syu nvidia"
+fi
+
+echo 'Установка X-Server'
+sudo pacman -Syu --noconfirm xorg-server xorg-xinit xorg-apps xterm mesa-libgl
 
 
-# УСТАНОВКА ДРАЙВЕРА ВИДЕО
-------------------------------
-трам-пам-пам
-пам-пам
-трам-пам-пам
-Трамп!
-
-
-
-
-# ШРИФТЫ
---------------
+echo 'ШРИФТЫ'
 sudo pacman -S ttf-font-awesome ttf-liberation ttf-dejavu opendesktop-fonts ttf-bitstream-vera ttf-arphic-uming ttf-hanazono ttf-arphic-ukai
 
 
@@ -67,31 +74,3 @@ sudo pacman -S ttf-font-awesome ttf-liberation ttf-dejavu opendesktop-fonts ttf-
 
 
 
-
-
-
-=========================================================================
-# СЕТЬ (вручную)
-
-read -p "Введите имя сети: " essid
-read -p "Введите пароль: " passwd
-read -p "Введите имя компьютера: " hostname
-
-iface = ( ifconfig | cut -d ' ' -f1| tr ':' '\n' | awk NF | grep wl )
-iwctl --passphrase $passwd station $iface connect $essid 
-ping ya.ru -c 4
-
-
-
-===========================================================================
-# SSH (вручную)
-------------------
-passwd пароль_рут
-nano /etc/ssh/sshd_config
-
--------
-Port 22
-PasswordAuthentication yes
--------
-
-systemctl restart sshd.service
