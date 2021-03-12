@@ -31,7 +31,7 @@ locale-gen &&
 timedatectl set-ntp true &&
 
 
-echo  'РАЗМЕТКА'
+echo  'СОЗДАЕМ РАЗДЕЛЫ НА ДИСКЕ'
 
 (
 
@@ -69,7 +69,7 @@ echo w;
 ) | fdisk -t gpt /dev/$DISK
 
 
-echo 'ФОРМАТИРОВАНИЕ'
+echo 'ФОРМАТИРУЕМ ИХ'
 
 mkswap /dev/${DISK}3 &&
 swapon /dev/${DISK}3 &&
@@ -78,7 +78,7 @@ mkfs.fat -F32 /dev/${DISK}1 &&
 (echo y;) | mkfs.ext4 /dev/${DISK}4	&&
 
 
-echo 'МОНТИРОВАНИЕ'
+echo 'МОНТИРУЕМ'
 
 mount /dev/${DISK}4 /mnt &&
 mkdir -p /mnt/{home,boot} &&
@@ -86,14 +86,14 @@ mount /dev/${DISK}2 /mnt/boot &&
 lsblk
 
 
-echo 'УСТАНОВКА БАЗОВОЙ СИСТЕМЫ'
+echo 'СТАВИМ БАЗОВЫЕ ПАКЕТЫ'
 
 clear &&
 pacstrap /mnt linux-firmware linux-zen-headers linux-zen base base-devel nano dhcpcd dialog wpa_supplicant netctl mc net-tools git wget &&   
 genfstab -U /mnt >> /mnt/etc/fstab
 
 
-echo 'ПЕРЕХОД В НОВОЕ ОКРУЖЕНИЕ'
+echo 'ПЕРЕХОДИМ В НОВОЕ ОКРУЖЕНИЕ'
 
 arch-chroot /mnt /bin/bash &&
 echo "MODULES=($MODULE)" > /etc/mkinitcpio.conf &&
@@ -102,7 +102,7 @@ echo "FILES=()" >> /etc/mkinitcpio.conf &&
 echo "HOOKS=(base udev autodetect modconf block keymap filesystems keyboard fsck)" >> /etc/mkinitcpio.conf &&
 
 
-echo 'СОЗДАНИЕ ЯДРА И ЗАГРУЗЧИКА'
+echo 'СОЗДАЕМ ЯДРО И ЗАГРУЗЧИК'
 
 cd /boot && mkinitcpio -p linux-zen &&
 pacman -Syu --noconfirm grub efibootmgr dosfstools os-prober mtools &&
@@ -111,7 +111,7 @@ mount /dev/${DISK}1 /boot/EFI &&
 grub-install --target=x86_64-efi  --bootloader-id=grub_uefi --recheck &&
 grub-mkconfig -o /boot/grub/grub.cfg &&
 
-#clear &&
+clear &&
 echo '                       '
 echo '                       '
 echo '                       '
@@ -120,13 +120,13 @@ echo 'ЗАДАЙТЕ ПАРОЛЬ АДМИНА :'
 passwd
 
 
-#echo 'МОМЕНТ ИСТИНЫ:  '
-#exit
-#umount /mnt/boot/EFI &&
-#umount /mnt/boot &&
-#umount /mnt &&
+echo 'МОМЕНТ ИСТИНЫ:  '
+exit
+umount /mnt/boot/EFI &&
+umount /mnt/boot &&
+umount /mnt &&
 
-#systemctl reboot
+systemctl reboot
 
 
 
