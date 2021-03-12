@@ -14,7 +14,7 @@ echo '
 ###################################################################
 '
 
-
+DISK = 'vda'
 loadkeys ru &&
 setfont cyr-sun16 &&
 echo 'en_US.UTF-8 UTF-8' >> /etc/locale.gen &&
@@ -24,7 +24,7 @@ echo 'ru_RU.UTF-8 UTF-8' >> /etc/locale.gen &&
 echo 'ru_RU ISO-8859-5' >> /etc/locale.gen &&
 locale-gen &&
 timedatectl set-ntp true &&
-export LANG=ru_RU.UTF-8 &&
+export LANG = "ru_RU.UTF-8" &&
 
 
 
@@ -64,23 +64,23 @@ echo ; #root
 echo Y;
 echo w;
 
-) | fdisk -t gpt /dev/vda
+) | fdisk -t gpt /dev/$DISK
 
 
 
 echo 'ФОРМАТИРОВАНИЕ'
 
-mkswap /dev/vda3 &&
-swapon /dev/vda3 &&
-mkfs.fat -F32 /dev/vda1 &&
-(echo y;) | mkfs.ext2 /dev/vda2	&&
-(echo y;) | mkfs.ext4 /dev/vda4	&&
+mkswap /dev/$DISK3 &&
+swapon /dev/$DISK3 &&
+mkfs.fat -F32 /dev/$DISK1 &&
+(echo y;) | mkfs.ext2 /dev/$DISK2	&&
+(echo y;) | mkfs.ext4 /dev/$DISK4	&&
 
 
 echo 'МОНТИРОВАНИЕ'
 
-mount /dev/vda4 /mnt &&
+mount /dev/$DISK4 /mnt &&
 mkdir -p /mnt/{home,boot} &&
-mount /dev/vda2 /mnt/boot &&
+mount /dev/$DISK2 /mnt/boot &&
 lsblk
 
