@@ -71,13 +71,11 @@ echo w;
 
 echo 'ФОРМАТИРОВАНИЕ'
 
-mkfs.fat -F32 /dev/vda1 &&			 #EFI  (FAT32)
-mkfs.ext2 /dev/vda2	&&			     #boot (ext2)
-echo y;
-echo ;
-mkfs.ext4 /dev/vda4	&&			     #root (ext4)
-echo y;
-echo ;
+mkfs.fat -F32 /dev/vda1 &&			         #EFI  (FAT32)
+mkfs.ext2 /dev/vda2	&&	echo y;;		      #boot (ext2)
+
+mkfs.ext4 /dev/vda4	&& echo y;;        #root (ext4)
+
 mkswap /dev/vda3 &&				       #swap
 swapon /dev/vda3 &&
 
