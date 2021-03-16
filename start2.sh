@@ -53,7 +53,7 @@ echo 'ВВЕДИТЕ ПАРОЛЬ ДЛЯ НОВОГО ПОЛЬЗОВАТЕЛЯ: 
 passwd $USER
 
 echo "%wheel ALL=(ALL) ALL" >> /etc/sudoers &&
-clear
+#clear
 
 
 
@@ -68,32 +68,37 @@ echo '========================================================================'
 
 
 echo '=================================================='
-echo 'УСТАНОВКА ДРАЙВЕРА ВИДЕО' 
+
 echo 'НЕ ОТХОДИТЕ ОТ КОМПЬЮТЕРА (если устанавливаете Арч на компьютер) 
 системе потребуется ввод пароля' 
 echo $USER 
 echo 'и возможно какие то ваши осмысленные манипуляции...'
 
-
+echo 'ШРИФТЫ'
+sudo pacman --noconfirm -S ttf-font-awesome ttf-liberation ttf-dejavu opendesktop-fonts ttf-bitstream-vera ttf-arphic-uming ttf-hanazono ttf-arphic-ukai
 
 echo 'Установка X-Server'
 sudo pacman -Syu --noconfirm xorg-server xorg-xinit xorg-apps xterm mesa-libgl
 
 
-echo 'ШРИФТЫ'
-sudo pacman -S ttf-font-awesome ttf-liberation ttf-dejavu opendesktop-fonts ttf-bitstream-vera ttf-arphic-uming ttf-hanazono ttf-arphic-ukai
+echo 'УСТАНОВКА ДРАЙВЕРА ВИДЕО' 
+git clone https://aur.archlinux.org/nvidia-390xx-utils.git && cd nvidia-390xx-utils && makepkg -sri &&
+git clone https://aur.archlinux.org/nvidia-390xx.git && cd nvidia-390xx && makepkg -sri
+
+
+
 
 
 
 
 echo 'СЕЙЧАС ПРОИЗОЙДЕТ ПЕРЕЗАПУСК. '
 
-exit
-umount /mnt/boot/EFI &&
-umount /mnt/boot &&
-umount /mnt &&
+#exit
+#umount /mnt/boot/EFI &&
+#umount /mnt/boot &&
+#umount /mnt &&
 
-systemctl reboot
+#systemctl reboot
 
 
 
