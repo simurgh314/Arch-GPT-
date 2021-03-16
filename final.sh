@@ -163,29 +163,29 @@ systemctl enable lxdm
 systemctl enable NetworkManager
 
 (
-echo y;
+echo Y;
 echo y;
 echo ;
-) | git clone https://aur.archlinux.org/nvidia-390xx-utils.git cd nvidia-390xx-utils && makepkg -sri
+) | git clone https://aur.archlinux.org/nvidia-390xx-utils.git && cd nvidia-390xx-utils && makepkg -sri
 
-(echo y;
+(echo Y;
 echo y;
 echo ;
-) | git clone https://aur.archlinux.org/nvidia-390xx.git cd nvidia-390xx && makepkg -sri
+) | git clone https://aur.archlinux.org/nvidia-390xx.git && cd nvidia-390xx && makepkg -sri
 
 
 echo 'ШРИФТЫ'
-sudo pacman -S ttf-font-awesome ttf-liberation ttf-dejavu opendesktop-fonts ttf-bitstream-vera ttf-arphic-uming ttf-hanazono ttf-arphic-ukai
+sudo pacman -S --noconfirm ttf-font-awesome ttf-liberation ttf-dejavu opendesktop-fonts ttf-bitstream-vera ttf-arphic-uming ttf-hanazono ttf-arphic-ukai
 
 
 echo 'СЕЙЧАС ПРОИЗОЙДЕТ ПЕРЕЗАПУСК. '
 
-exit
-umount /mnt/boot/EFI &&
-umount /mnt/boot &&
-umount /mnt &&
+#exit
+#umount /mnt/boot/EFI &&
+#umount /mnt/boot &&
+#umount /mnt &&
 
-systemctl reboot
+#systemctl reboot
 
 
 
