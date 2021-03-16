@@ -1,8 +1,8 @@
+#!/bin/bash
+
 echo 'СТАВИМ БАЗОВЫЕ ПАКЕТЫ'
 
 pacstrap /mnt linux-firmware linux-zen-headers linux-zen base base-devel nano dhcpcd dialog wpa_supplicant netctl networkmanager network-manager-applet ppp mc net-tools git wget curl &&   
 genfstab -U /mnt >> /mnt/etc/fstab
-
-echo 'ПЕРЕХОДИМ В НОВОЕ ОКРУЖЕНИЕ'
 
 arch-chroot /mnt /bin/bash
