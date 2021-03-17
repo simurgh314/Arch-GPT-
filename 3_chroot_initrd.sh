@@ -13,6 +13,4 @@ pacman -Syu --noconfirm grub efibootmgr dosfstools os-prober mtools &&
 mkdir /boot/EFI &&
 mount /dev/${DISK}1 /boot/EFI &&
 grub-install --target=x86_64-efi  --bootloader-id=grub_uefi --recheck &&
-grub-mkconfig -o /boot/grub/grub.cfg &&
-
-#clear &&
+grub-mkconfig -o /boot/grub/grub.cfg
