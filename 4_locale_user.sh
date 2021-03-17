@@ -3,7 +3,6 @@
 echo 'ЗАДАЙТЕ ПАРОЛЬ АДМИНА :'
 passwd
 
-read -p "ЗАДАЙТЕ ПАРОЛЬ НОВОГО ПОЛЬЗОВАТЕЛЯ :" PASS
 read -p "Введите имя компьютера: " HOST
 read -p "Введите имя нового пользователя" NEW_USER
 read -p "Укажите часовой пояс в формате  Europe/Moscow  " POYAS
@@ -27,11 +26,10 @@ grub-mkconfig -o /boot/grub/grub.cfg &&
 echo ' СОЗДАНИЕ ПОЛЬЗОВАТЕЛЕЙ'
 
 useradd -m -g users -G audio,power,storage,video,wheel -s /bin/bash $NEW_USER &&
-#echo 'ВВЕДИТЕ ПАРОЛЬ ДЛЯ НОВОГО ПОЛЬЗОВАТЕЛЯ: '
-(
-echo $PASS;
-echo $PASS;
-) | passwd $NEW_USER &&
+
+
+echo 'ВВЕДИТЕ ПАРОЛЬ ДЛЯ НОВОГО ПОЛЬЗОВАТЕЛЯ: '
+passwd $NEW_USER &&
 
 sed -i 's/# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/g' /etc/sudoers
 #clear
