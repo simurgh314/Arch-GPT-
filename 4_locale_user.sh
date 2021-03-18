@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo 'ЗАДАЙТЕ ПАРОЛЬ АДМИНА :'
-passwd
+passwd root
 
 read -p "Введите имя компьютера: " HOST
 read -p "Введите имя нового пользователя" NEW_USER
