@@ -3,7 +3,7 @@
 echo 'СТАВИМ БАЗОВЫЕ ПАКЕТЫ'
 
 pacstrap /mnt linux-firmware linux-zen-headers linux-zen base base-devel nano dhcpcd mc net-tools git wget curl &&   
-# dialog wpa_supplicant netctl networkmanager network-manager-applet ppp 
+# dialog wpa_supplicant netctl networkmanager network-manager-applet ppp openssh 
 genfstab -U /mnt >> /mnt/etc/fstab
 
 arch-chroot /mnt /bin/bash
