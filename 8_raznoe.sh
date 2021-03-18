@@ -7,13 +7,13 @@ echo '
 Эти манипуляции будут радовать вас до первого перезапуска. Если желаете добавить их в постоянную автозагрузку,
 то наберите еще и "sudo systemctl enable dhcpcd" для проводного и "sudo systemctl enable wpa_supplicant".
 Создайте профиль службы netctl для WIFI: "sudo wifi-menu -o" запомните название получившегося профиля, 
-например он может быть таким: wlp2s0-matrix777. 
+состоящего из имени интерфейса и имени сети,например он может быть таким: wlp2s0-matrix777. 
 Затем добавьте его в автозагрузку: sudo netctl enable wlp2s0-matrix777
 Итого, в случае беспроводной сети, у вас должно быть запущено 2 сервиса:
 1) sudo systemctl enable wpa_supplicant
 2) sudo netctl enable wlp2s0-matrix777
 В случае проводного, у вас должен быть активен интрефейс (sudo ip link set nazvanie_interfeysa up)
-и запущен dhcp сервис (sudo systemctl start dhcpcd) (ну или настроены адреса вручную)
+и запущен dhcp сервис (sudo systemctl start dhcpcd) (ну или настроены адреса вручную)'
 
 ##########################################################################################
 
@@ -28,8 +28,6 @@ sudo echo '
 [Service]
 ExecStart=
 ExecStart=-/usr/bin/agetty --autologin $USER --noclear %I $TERM' > nano /etc/systemd/system/getty@tty1.service.d/override.conf
-sudo sed -i 's/ExecStart=-/usr/bin/agetty --autologin $USER --noclear %I $TERM/ExecStart=-/usr/bin/agetty --autologin $USER --noclear %I $TERM/g' /etc/systemd/system/getty@tty1.service.d/override.conf &&
 
-
-
+#sudo sed -i 's/ExecStart=-/usr/bin/agetty --autologin $USER --noclear %I $TERM/ExecStart=-/usr/bin/agetty --autologin $USER --noclear %I $TERM/g' /etc/systemd/system/getty@tty1.service.d/override.conf &&
 #проверить
