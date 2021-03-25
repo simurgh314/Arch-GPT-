@@ -1,6 +1,6 @@
 #!/bin/bash
 
-https://git.io/JYIk9
+# https://git.io/JYIk9
 
 
 cd && echo 'УСТАНОВКА ПРОГРАММ'
@@ -50,4 +50,4 @@ ufw
 htop 
 catfish'
 
-sudo pacman -Syu --noconfirm $packets
+sudo pacman -Sy --noconfirm $packets
