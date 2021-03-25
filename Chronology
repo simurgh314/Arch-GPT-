@@ -1,0 +1,335 @@
+
+
+
+###################################################################
+###################################################################
+################                                   ################
+################             ARCHLINUX             ################
+################                                   ################
+################         Сын ошибок трудных        ################
+################                                   ################
+################              UEFI GPT             ################
+################                                   ################
+###################################################################
+###################################################################
+
+
+
+# СЕТЬ
+---------
+iwctl --passphrase пароль_сети station устройство connect имя_сети (создать $переменные под $passphrase, $устройство, $имя_сети)
+systemctl start dhcpcd.service (если проводной)
+
+
+# Если после перезагрузки системы у вас упадет сеть, вы можете попробовать вручную поднять интерфейс.
+"sudo ip link set wlp2s0 up" ( вместо wlp2s0 впишите название вашего интерфейса. Список доступных интерфейсов можно узнать
+командой ip addr или ifconfig), если сеть проводная, то активируйте проводной интерфейс (если он не активен) 
+и запустите сервис DHCP командой "sudo systemctl start dhcpcd". Эти манипуляции будут радовать вас до первого перезапуска. 
+Если желаете добавить их в постоянную автозагрузку,то наберите еще и "sudo systemctl enable dhcpcd" для проводного,
+ и "sudo systemctl enable wpa_supplicant" для безпроводного.
+Создайте профиль службы netctl для WIFI: "sudo wifi-menu -o" запомните название получившегося профиля, 
+состоящего из имени интерфейса и имени сети,например он может быть таким: wlp2s0-matrix777. 
+Затем добавьте его в автозагрузку: sudo netctl enable wlp2s0-matrix777
+Итого, в случае беспроводной сети, у вас должно быть запущено 2 сервиса:
+1) sudo systemctl enable wpa_supplicant
+2) sudo netctl enable wlp2s0-matrix777
+В случае проводного, у вас должен быть активен интрефейс (sudo ip link set nazvanie_interfeysa up)
+и запущен dhcp сервис (sudo systemctl start dhcpcd) (ну или настроены адреса вручную) 
+
+
+
+# ЛОКАЛИЗАЦИЯ
+--------------------------------------------------------------------
+loadkeys ru
+setfont cyr-sun16
+nano /etc/locale.gen
+locale-gen
+export LANG="ru_RU.UTF-8"
+
+
+
+# РАЗМЕТКА (Используется PARTED)
+----------------------------------------------------------
+parted -a optimal /dev/sda  # выравнивание разделов
+unit mib
+mklabel gpt
+
+mkpart primary 2 258		#1 /dev/sda1 256MB EFI (FAT32)
+set 1 boot on
+
+mkpart primary 258 514		#2 /dev/sda2 256MB boot (ext2)
+name 2 boot
+
+mkpart primary 514 4610		#3 /dev/sda3 4GB (SWAP)
+name 3 swap
+
+mkpart primary 4610 -1		#4 /dev/sda4 (ext4)
+name 4 root
+
+print						#зрим что вышло
+
+
+
+# ФОРМАТИРОВАНИЕ
+---------------------------------------------
+mkfs.fat -F32 /dev/sda1			#EFI  (FAT32)
+mkfs.ext2 /dev/sda2				#boot (ext2)
+mkfs.ext4 /dev/sda4				#root (ext4)
+mkswap /dev/sda3				#swap
+swapon /dev/sda3
+
+
+
+# МОНТИРОВАНИЕ
+---------------------------
+mount /dev/sda4 /mnt
+mkdir -p /mnt/{home,boot}
+mount /dev/sda2 /mnt/boot
+
+
+
+# УСТАНОВКА БАЗОВОЙ СИСТЕМЫ
+------------------------------
+pacstrap /mnt linux-firmware linux-zen-headers linux-zen base base-devel nano nano dhcpcd dialog wpa_supplicant netctl mc git wget net-tools openssh curl
+genfstab -U /mnt >> /mnt/etc/fstab
+
+
+
+# ПЕРЕХОД В НОВОЕ ОКРУЖЕНИЕ
+------------------------------
+arch-chroot  /mnt  /bin/bash
+nano /etc/mkinitcpio.conf	 
+
+> добавить "keymap" в строку HOOKS чтобы получилось так: 
+HOOKS=(base udev autodetect modconf block keymap filesystems keyboard fsck)
+(Сохранить изменения комбинация Ctrl+x после чего нужно нажать 'y' и Ентер)
+
+passwd пароль_админа  # ЗАДАЙТЕ ПАРОЛЬ РУТ, ИНАЧЕ НЕ ВОЙДЕТЕ В СВОЮ СИСТЕМУ ПОСЛЕ РЕСТАРТА!
+
+
+
+# СОЗДАНИЕ ЯДРА И ЗАГРУЗЧИКА
+---------------------------------
+
+pacman -Syu grub efibootmgr dosfstools os-prober mtools
+cd /boot && mkinitcpio -p linux-zen
+mkdir /boot/EFI
+mount /dev/sda1  /boot/EFI
+grub-install --target=x86_64-efi  --bootloader-id=grub_uefi --recheck
+grub-mkconfig -o /boot/grub/grub.cfg
+exit
+umount -R /mnt
+
+systemctl reboot
+
+
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+МОМЕНТ ИСТИНЫ: ПЕРЕЗАГРУЗКА (логинимся под простым пользователем)
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+# СЕТЬ WIFI
+-------------------------------------------------------------
+sudo wifi-menu -o	#запоминаем название создаваемого профиля
+netctl enable название_профиля	#автозапуск
+systemctl enable wpa_supplicant	#автозапуск 
+sudo pacman -Syu
+
+
+
+# ЛОКАЛИЗАЦИЯ(), ЧАСЫ и ПРОЧЕЕ 
+------------------------------------
+hostnamectl set-hostname имя_хоста
+ln -sf /usr/share/zoneinfo/Europe/Moscow /etc/localtime
+hwclock --systohc
+timedatectl set-ntp true
+localectl set-keymap ru
+setfont cyr-sun16
+localectl set-locale LANG="ru_RU.UTF-8"
+echo "FONT=cyr-sun16"  >>  /etc/vconsole.conf
+export LANG="ru_RU.UTF-8"
+mkinitcpio -P
+grub-mkconfig -o /boot/grub/grub.cfg
+
+==========================================================
+# Если предполагается устанавливать 32битные приложения,
+то нужно раскомментировать ветку multilib в 
+конфиге /etc/pacman.conf
+
+[multilib]
+Include = /etc/pacman.d/mirrorlist
+
+==========================================================
+
+
+
+
+# СОЗДАНИЕ ПОЛЬЗОВАТЕЛЕЙ
+---------------------------------------------------------------------------------------
+useradd -m -g users -G audio,power,storage,video,wheel -s /bin/bash имя_пользователя
+passwd имя_пользователя		#создаем пароль для этого пользователя
+echo "%wheel ALL=(ALL) ALL" >> /etc/sudoers
+
+exit
+
+
+
+
+###################################################################################
+#  ВСЕ ДАЛЬНЕЙШИЕ ДЕЙСТВИЯ СОВЕРШАЕМ ИЗ ПОД ПРОСТОГО ПОЛЬЗОВАТЕЛЯ ИСПОЛЬЗУЯ SUDO  #
+###################################################################################
+
+
+
+
+# УСТАНОВКА Xorg 
+----------------------------------------------------------------
+sudo pacman -S xorg-server xorg-xinit xorg-apps xterm mesa-libgl	
+
+(mesa-libgl если карта Nvidia и добавляем еще lib32-mesa если будут 32битные приложения)
+
+
+
+
+# УСТАНОВКА ДРАЙВЕРА ВИДЕО
+------------------------------
+# Поменяйте соотвественно на адрес (aur.archlinux.org/nvidia-390xx-utils.git) репозитория для своей видеокарты!
+# или установите драйвер из репозитория командой 'sudo pacman -S nvidia'
+
+cd && git clone https://aur.archlinux.org/nvidia-390xx-utils.git && cd nvidia-390xx-utils && makepkg -sri &&
+
+cd && git clone https://aur.archlinux.org/nvidia-390xx.git && cd nvidia-390xx && makepkg -sri
+
+cd && git clone https://aur.archlinux.org/polybar.git && cd polybar && makepkg -sri
+
+
+
+
+# АВТОЛОГИН без DM (требуется пакет xorg-xinit)
+-----------------------------------------------
+1) Редактируем конфиг .xinitrc в домашней директории 
+(если он не существует ,то скопируем его: 'cp /etc/X11/xinit/xinitrc ~/.xinitrc'
+Вставляем в отмеченном месте наш i3. При запуске будет исполнена команда startx, она 
+запустит то окружение, которое вы укажете ЗДЕСЬ.
+
+==========================================================================
+if [ -d /etc/X11/xinit/xinitrc.d ] ; then
+ for f in /etc/X11/xinit/xinitrc.d/?*.sh ; do
+  [ -x "$f" ] && . "$f"
+ done
+ unset f
+fi
+
+exec i3 	# ВСТАВЛЯЕМ 'exec i3' или 'exec startxfce4' или 'exec startkde' 
+
+twm &
+xclock -geometry 50x50-1+1 &
+xterm -geometry 80x50+494+51 &
+xterm -geometry 80x20+494-0 &
+exec xterm -geometry 80x66+0+0 -name login
+==========================================================================
+
+
+2) Редактируем конфиг .bash_profile в домашней директории. 
+
+nano ~/.bash_profile
+
+Если файл не существует, скопируем его:  'cp /etc/skel/.bash_profile ~/.bash_profile'   
+Добавляем туда блок кода (без ковычек'')
+
+'[[ -z $DISPLAY && $XDG_VTNR -eq 1 ]] && exec startx' чтобы получилось так:
+
+
+[[ -f ~/.bashrc ]] && . ~/.bashrc
+[[ -z $DISPLAY && $XDG_VTNR -eq 1 ]] && exec startx
+
+
+(Вместо '-eq 1' можно указать другую виртуальную консоль)
+
+
+3) Создадим юнит службы Systemd.
+
+sudo systemctl edit getty@tty1
+
+В открывшемся редакторе вводим нижеприведенное и не забываем заменить USER на своего пользователя:
+
+[Service]
+ExecStart=
+ExecStart=-/usr/bin/agetty --autologin USER --noclear %I $TERM
+
+
+Сохраняем, закрываем. После рестарта произойдет (наверное) автологин в консоль №1.
+Если понадобится залогиниться под другим пользователем, используйте комбинацию Ctrl+Alt+F2..F6 для вызова виртуальной консоли,
+и запускайте окружение командой 'startx'.
+
+
+
+# ШРИФТЫ
+--------------
+sudo pacman -S ttf-font-awesome ttf-liberation ttf-dejavu opendesktop-fonts ttf-bitstream-vera ttf-arphic-uming ttf-hanazono ttf-arphic-ukai
+
+
+
+# УСТАНОВКА ПРОГРАММ
+
+sudo pacman -Syu .....
+
+xorg-server 
+xorg-xinit 
+xorg-apps 
+xterm mesa-libgl 
+ttf-font-awesome 
+ttf-liberation 
+ttf-dejavu 
+opendesktop-fonts
+ttf-bitstream-vera 
+ttf-arphic-uming 
+ttf-hanazono 
+ttf-arphic-ukai 
+i3-gaps 
+nitrogen 
+xfce4-clipman-plugin
+lxappearance 
+tumbler 
+numlockx 
+firefox 
+ristretto 
+unzip 
+usbutils 
+speedcrunch 
+neofetch 
+xfce4-terminal 
+gvfs
+rofi 
+pasystray 
+pavucontrol 
+pulseaudio-jack 
+pulseaudio-equalizer 
+flameshot 
+thunar
+thunar-volman
+alsa-plugins 
+alsa-utils 
+pulseaudio 
+alsa 
+gpart 
+gparted 
+kolourpaint 
+ufw 
+htop 
+catfish
+
+
+
+
+
+
+
+
+
+
+
+
+
