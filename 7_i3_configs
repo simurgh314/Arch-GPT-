@@ -1,5 +1,6 @@
 #!/bin/bash
-https://git.io/JYIsf
+
+#https://git.io/JYIsf
 
 wget https://raw.githubusercontent.com/simurgh314/i3/main/.config/picom/picom.conf &&
 mkdir -p /home/$USER/.config/picom &&
