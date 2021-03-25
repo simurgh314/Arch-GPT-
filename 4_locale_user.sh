@@ -1,5 +1,7 @@
 #!/bin/bash
 
+https://git.io/JYIkn
+
 echo 'ЗАДАЙТЕ ПАРОЛЬ АДМИНА :'
 passwd root
 
