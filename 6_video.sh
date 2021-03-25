@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# https://git.io/JYIL3
 
 cd && git clone https://aur.archlinux.org/nvidia-390xx-utils.git && cd nvidia-390xx-utils && makepkg -sri &&
 
