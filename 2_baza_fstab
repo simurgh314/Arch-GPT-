@@ -1,5 +1,7 @@
 #!/bin/bash
 
+timedatectl set-ntp true
+
 # https://git.io/JYIUH
 
 echo 'СТАВИМ БАЗОВЫЕ ПАКЕТЫ'
