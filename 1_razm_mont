@@ -66,15 +66,15 @@ echo w;
 
 echo 'ФОРМАТИРУЕМ ИХ'
 
-mkswap /dev/${DISK}3 &&
-swapon /dev/${DISK}3 &&
-mkfs.fat -F32 /dev/${DISK}1 &&
-(echo y;) | mkfs.ext2 /dev/${DISK}2	&&
-(echo y;) | mkfs.ext4 /dev/${DISK}4	&&
+mkswap /dev/${DISK}p3 &&
+swapon /dev/${DISK}p3 &&
+mkfs.fat -F32 /dev/${DISK}p1 &&
+(echo y;) | mkfs.ext2 /dev/${DISK}p2	&&
+(echo y;) | mkfs.ext4 /dev/${DISK}p4	&&
 
 echo 'МОНТИРУЕМ ФАЙЛОВУЮ СИСТЕМУ'
 
-mount /dev/${DISK}4 /mnt &&
+mount /dev/${DISK}p4 /mnt &&
 mkdir -p /mnt/{home,boot} &&
-mount /dev/${DISK}2 /mnt/boot &&
+mount /dev/${DISK}p2 /mnt/boot &&
 lsblk
