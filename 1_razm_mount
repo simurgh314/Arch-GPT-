@@ -1,0 +1,80 @@
+#!/bin/bash
+echo '
+
+#https://git.io/JYIU8
+
+###################################################################
+###################################################################
+################                                   ################
+################             ARCHLINUX             ################
+################                                   ################
+################         Сын ошибок трудных        ################
+################                                   ################
+################              UEFI GPT             ################
+################                                   ################
+###################################################################
+###################################################################
+'
+export DISK="sda" &&
+export LANG="ru_RU.UTF-8" &&
+export MODULE="" &&
+
+loadkeys ru &&
+setfont cyr-sun16 &&
+echo 'en_US.UTF-8 UTF-8' > /etc/locale.gen &&
+echo 'en_US ISO-8859-1' >> /etc/locale.gen &&
+echo 'ru_RU.KOI8-R KOI8-R' >> /etc/locale.gen &&
+echo 'ru_RU.UTF-8 UTF-8' >> /etc/locale.gen &&
+echo 'ru_RU ISO-8859-5' >> /etc/locale.gen &&
+locale-gen &&
+export LANG="ru_RU.UTF-8" &&
+timedatectl set-ntp true &&
+
+echo  'СОЗДАЕМ РАЗДЕЛЫ НА ДИСКЕ'
+
+(
+echo g;
+echo n;
+echo ;
+echo ;
+echo +256M; #EFI
+echo Y;
+echo t;
+echo 1;
+
+echo n;
+echo ;
+echo ;
+echo +256M; #boot
+echo Y;
+
+echo n;
+echo ;
+echo ;
+echo +4G; #swap
+echo Y;
+
+echo n;
+echo ;
+echo ;
+echo ; #root
+echo Y;
+echo w;
+
+) | fdisk -t gpt /dev/$DISK
+
+
+echo 'ФОРМАТИРУЕМ ИХ'
+
+mkswap /dev/${DISK}3 &&
+swapon /dev/${DISK}3 &&
+mkfs.fat -F32 /dev/${DISK}1 &&
+(echo y;) | mkfs.ext2 /dev/${DISK}2	&&
+(echo y;) | mkfs.ext4 /dev/${DISK}4	&&
+
+echo 'МОНТИРУЕМ ФАЙЛОВУЮ СИСТЕМУ'
+
+mount /dev/${DISK}4 /mnt &&
+mkdir -p /mnt/{home,boot} &&
+mount /dev/${DISK}2 /mnt/boot &&
+lsblk
