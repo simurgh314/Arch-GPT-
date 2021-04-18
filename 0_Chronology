@@ -117,10 +117,10 @@ passwd        # 'ЗАДАЙТЕ ПАРОЛЬ РУТ, ИНАЧЕ НЕ ВОЙДЕ�
 
 # 8 СОЗДАНИЕ ЯДРА И ЗАГРУЗЧИКА
 ---------------------------------
-pacman -Sy grub efibootmgr dosfstools os-prober mtools
-cd /boot && mkinitcpio -p linux-zen
+pacman -Sy grub efibootmgr [dosfstools os-prober mtools] # []-необязателные пакеты, если нет втрой ос
 mkdir /boot/EFI
 mount /dev/sda1  /boot/EFI
+cd /boot && mkinitcpio -p linux-zen
 grub-install --target=x86_64-efi  --bootloader-id=grub_uefi --recheck
 grub-mkconfig -o /boot/grub/grub.cfg
 exit
